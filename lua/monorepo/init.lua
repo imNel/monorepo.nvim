@@ -1,3 +1,4 @@
+local Path = require("plenary.path")
 local finders = require("telescope.finders")
 local conf = require("telescope.config").values
 local pickers = require("telescope.pickers")
@@ -9,41 +10,50 @@ local M = {}
 local data_path = vim.fn.stdpath("data")
 local persistent_json = string.format("%s/monorepo.json", data_path)
 
-MonorepoVars = {
-	projects = {},
-}
-
 -- Something like this structure?:
--- Vars = {
---   monorepos = {
---     name = "project name",
---     projects = {},
---   }
+-- MonorepoVars = {
+--   [proj] = {},
 -- }
+MonorepoVars = MonorepoVars or {}
+CurrentMonorepo = ""
 
 Messages = {
 	NOT_IN_SUBPROJECT = "Not in a project",
 	DUPLICATE_PROJECT = "Project already added",
+	CANT_REMOVE_PROJECT = "Project not in monorepo",
+	REMOVED_PROJECT = "Removed project",
 	ADDED_PROJECT = "Added project",
 	NO_PROJECTS = "No projects added",
 	SWITCHED_PROJECT = "Switched to project",
+	SAVED = "Saved",
 }
 
 M.setup = function(config)
 	-- Load in config
 	local config = config or {}
-	M.get_monorepo()
+	CurrentMonorepo = vim.fn.getcwd()
+
+	local status, load = pcall(M.load_data, persistent_json)
+
+	if status then
+		MonorepoVars = load
+		if not MonorepoVars[CurrentMonorepo] then
+			MonorepoVars[CurrentMonorepo] = { "/" }
+		end
+	else
+		MonorepoVars = {}
+		MonorepoVars[CurrentMonorepo] = { "/" }
+	end
 end
 
-M.get_monorepo = function()
-	MonorepoVars.monorepo = vim.fn.getcwd()
-	table.insert(MonorepoVars.projects, "/")
+M.load_data = function(path)
+	return vim.json.decode(Path:new(path):read())
 end
 
 M.get_project_directory = function(file, netrw)
-	local idx = string.find(file, MonorepoVars.monorepo, 1, true)
+	local idx = string.find(file, CurrentMonorepo, 1, true)
 	if idx then
-		local relative_path = string.sub(file, idx + #MonorepoVars.monorepo + 0)
+		local relative_path = string.sub(file, idx + #CurrentMonorepo + 0)
 		if netrw then
 			return relative_path
 		end
@@ -57,20 +67,60 @@ end
 
 M.add_current_project = function()
 	local dir = M.get_project_directory(vim.api.nvim_buf_get_name(0), vim.bo.filetype == "netrw")
+	local projects = MonorepoVars[CurrentMonorepo]
 	if not dir or dir == "" then
 		vim.notify(Messages.NOT_IN_SUBPROJECT)
 		return
 	end
-	if vim.tbl_contains(MonorepoVars.projects, dir) then
+	if vim.tbl_contains(projects, dir) then
 		vim.notify(Messages.DUPLICATE_PROJECT)
 		return
 	end
-	table.insert(MonorepoVars.projects, dir)
+	projects = table.insert(projects or {}, dir)
 	vim.notify(Messages.ADDED_PROJECT .. ": " .. dir)
+	M.save()
+end
+
+M.remove_current_project = function()
+	local dir = M.get_project_directory(vim.api.nvim_buf_get_name(0), vim.bo.filetype == "netrw")
+	local projects = MonorepoVars[CurrentMonorepo]
+	if not dir or dir == "" then
+		vim.notify(Messages.NOT_IN_SUBPROJECT)
+		return
+	end
+	if not vim.tbl_contains(projects, dir) then
+		vim.notify(Messages.CANT_REMOVE_PROJECT)
+		return
+	end
+	projects = table.remove(projects, vim.tbl_get(projects, dir))
+	vim.notify(Messages.REMOVED_PROJECT .. ": " .. dir)
+	M.save()
+end
+
+M.toggle_current_project = function()
+	local dir = M.get_project_directory(vim.api.nvim_buf_get_name(0), vim.bo.filetype == "netrw")
+	local projects = MonorepoVars[CurrentMonorepo]
+
+	if not dir or dir == "" then
+		vim.notify(Messages.NOT_IN_SUBPROJECT)
+		return
+	end
+
+	if vim.tbl_contains(projects, dir) then
+		projects = table.remove(projects, vim.tbl_get(projects, dir))
+		vim.notify(Messages.REMOVED_PROJECT .. ": " .. dir)
+		M.save()
+		return
+	else
+		projects = table.insert(projects or {}, dir)
+		vim.notify(Messages.ADDED_PROJECT .. ": " .. dir)
+		M.save()
+		return
+	end
 end
 
 M.find_projects = function()
-	local projects = MonorepoVars.projects
+	local projects = MonorepoVars[CurrentMonorepo]
 	local opts = {}
 	if #projects == 0 then
 		vim.notify(Messages.NO_PROJECTS)
@@ -94,16 +144,12 @@ end
 M.select_project = function(prompt_bufnr)
 	actions.close(prompt_bufnr)
 	local selection = action_state.get_selected_entry()
-	vim.cmd("cd " .. MonorepoVars.monorepo .. "/" .. selection.value)
+	vim.cmd("cd " .. CurrentMonorepo .. "/" .. selection.value)
 	vim.notify(Messages.SWITCHED_PROJECT .. ": " .. selection.value)
 end
 
-M.log = function()
-	local projects = MonorepoVars.projects
-	vim.notify(MonorepoVars.monorepo)
-	for _, project in ipairs(projects) do
-		vim.notify(project)
-	end
+M.save = function()
+	Path:new(persistent_json):write(vim.fn.json_encode(MonorepoVars), "w")
 end
 
 return M

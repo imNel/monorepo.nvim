@@ -1,9 +1,7 @@
 1. Add picker as valid Telescope extension
-2. Make picks persist (see harpoon, something about writing a json file...)
-3. Add in removing picks from the list
-4. Default keybinds?? (Probably some sort of example in the readme)
-5. Config options
-6. Other ways to add projects
+3. Default keybinds?? (Probably some sort of example in the readme)
+4. Config options
+5. Other ways to add projects
 - Text input box?
 - NerdTrees?
 
