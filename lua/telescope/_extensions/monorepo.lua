@@ -13,12 +13,13 @@ local action_state = require("telescope.actions.state")
 local currentMonorepo = require("monorepo").currentMonorepo
 local currentProjects = require("monorepo").currentProjects
 local messages = require("monorepo.messages")
+local utils = require("monorepo.utils")
 
 local function select_project(prompt_bufnr)
   actions.close(prompt_bufnr)
   local selection = action_state.get_selected_entry()
   vim.cmd("cd " .. currentMonorepo .. "/" .. selection.value)
-  vim.notify(messages.SWITCHED_PROJECT .. ": " .. selection.value)
+  utils.notify(messages.SWITCHED_PROJECT .. ": " .. selection.value)
 end
 
 local function delete_entry(prompt_bufnr)
@@ -27,11 +28,11 @@ local function delete_entry(prompt_bufnr)
     return
   end
   if selected_entry.value == "/" then
-    vim.notify(messages.CANT_REMOVE_MONOREPO)
+    utils.notify(messages.CANT_REMOVE_MONOREPO)
     return
   end
-  require("monorepo").remove_current_project(selected_entry.value)
-  action_state.get_current_picker(prompt_bufnr):refresh(
+  require("monorepo").remove_project(selected_entry.value)
+  action_state.get_picker(prompt_bufnr):refresh(
     finders.new_table({
       results = currentProjects,
     }),

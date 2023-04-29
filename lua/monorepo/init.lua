@@ -6,75 +6,90 @@ local M = {}
 M.monorepoVars = {}
 M.currentMonorepo = vim.fn.getcwd()
 
--- Config could include:
--- Data path?
--- Silent?
--- Disable autochdir false
--- Autoload
+M.config = {
+  silent = false,
+  autoload_telescope = true,
+  data_path = vim.fn.stdpath("data"),
+}
+
+---@class pluginConfig
+---@field silent boolean
+---@field autoload_telescope boolean
+---@field data_path string
+---@param config? pluginConfig
 M.setup = function(config)
-  local config = config or {}
-  M.currentMonorepo = vim.fn.getcwd()
+  -- Overwrite default config with user config
+  if config then
+    for k, v in pairs(config) do
+      M.config[k] = v
+    end
+  end
+
   vim.opt.autochdir = false
+  utils.load(M) -- Load monorepo.json into M
 
-  utils.load(M)
-
-  -- idk if this is bad practice but I had weird issues where
+  -- I don't know if this is bad practice but I had weird issues where
   -- sometimes telescope would load before my setup function
   -- and cause the picker to bug out
-  local has_telescope, telescope = pcall(require, "telescope")
-  if has_telescope then
-    telescope.load_extension("monorepo")
+  if M.config.autoload_telescope then
+    local has_telescope, telescope = pcall(require, "telescope")
+    if has_telescope then
+      telescope.load_extension("monorepo")
+    end
   end
 end
 
+-- If no dir is passed, it will use the current buffer's directory
 ---@param dir string|nil
-M.add_current_project = function(dir)
+M.add_project = function(dir)
   if dir and dir:sub(1, 1) ~= "/" then
-    vim.notify(messages.INVALID_PATH)
+    utils.notify(messages.INVALID_PATH)
     return
   end
 
   dir = dir or utils.get_project_directory(vim.api.nvim_buf_get_name(0), vim.bo.filetype == "netrw")
   local projects = M.monorepoVars[M.currentMonorepo]
   if not dir or dir == "" then
-    vim.notify(messages.NOT_IN_SUBPROJECT)
+    utils.notify(messages.NOT_IN_SUBPROJECT)
     return
   end
   if vim.tbl_contains(projects, dir) then
-    vim.notify(messages.DUPLICATE_PROJECT)
+    utils.notify(messages.DUPLICATE_PROJECT)
     return
   end
   projects = table.insert(projects or {}, dir)
-  vim.notify(messages.ADDED_PROJECT .. ": " .. dir)
+  utils.notify(messages.ADDED_PROJECT .. ": " .. dir)
   utils.save()
 end
 
+-- If no dir is passed, it will use the current buffer's directory
 ---@param dir string|nil
-M.remove_current_project = function(dir)
+M.remove_project = function(dir)
   if dir and dir:sub(1, 1) ~= "/" then
-    vim.notify(messages.INVALID_PATH)
+    utils.notify(messages.INVALID_PATH)
     return
   end
 
   dir = dir or utils.get_project_directory(vim.api.nvim_buf_get_name(0), vim.bo.filetype == "netrw")
   local projects = M.monorepoVars[M.currentMonorepo]
   if not dir or dir == "" then
-    vim.notify(messages.NOT_IN_SUBPROJECT)
+    utils.notify(messages.NOT_IN_SUBPROJECT)
     return
   end
   if not vim.tbl_contains(projects, dir) then
-    vim.notify(messages.CANT_REMOVE_PROJECT)
+    utils.notify(messages.CANT_REMOVE_PROJECT)
     return
   end
   projects = table.remove(projects, vim.tbl_get(projects, dir))
-  vim.notify(messages.REMOVED_PROJECT .. ": " .. dir)
+  utils.notify(messages.REMOVED_PROJECT .. ": " .. dir)
   utils.save()
 end
 
+-- If no dir is passed, it will use the current buffer's directory
 ---@param dir string|nil
-M.toggle_current_project = function(dir)
+M.toggle_project = function(dir)
   if dir and dir:sub(1, 1) ~= "/" then
-    vim.notify(messages.INVALID_PATH)
+    utils.notify(messages.INVALID_PATH)
     return
   end
 
@@ -83,19 +98,60 @@ M.toggle_current_project = function(dir)
   local projects = M.monorepoVars[M.currentMonorepo]
 
   if not dir or dir == "" then
-    vim.notify(messages.NOT_IN_SUBPROJECT)
+    utils.notify(messages.NOT_IN_SUBPROJECT)
     return
   end
 
   if vim.tbl_contains(projects, dir) then
     projects = table.remove(projects, vim.tbl_get(projects, dir))
-    vim.notify(messages.REMOVED_PROJECT .. ": " .. dir)
+    utils.notify(messages.REMOVED_PROJECT .. ": " .. dir)
     utils.save()
     return
   else
     projects = table.insert(projects or {}, dir)
-    vim.notify(messages.ADDED_PROJECT .. ": " .. dir)
+    utils.notify(messages.ADDED_PROJECT .. ": " .. dir)
     utils.save()
+    return
+  end
+end
+
+-- Text box prompt for editing project list.
+-- Defaults to add.
+---@param action "add"|"remove"|"toggle"|nil
+M.prompt_project = function(action)
+  if not action then
+    action = "add"
+  end
+
+  if action ~= "add" and action ~= "remove" and action ~= "toggle" then
+    utils.notify(messages.INVALID_ACTION)
+    return
+  end
+
+  if action == "add" then
+    local dir = vim.fn.input(messages.ADD_PROJECT)
+    if dir:sub(1, 1) ~= "/" then
+      dir = "/" .. dir
+    end
+    M.add_project(dir)
+    return
+  end
+
+  if action == "remove" then
+    local dir = vim.fn.input(messages.REMOVE_PROJECT)
+    if dir:sub(1, 1) ~= "/" then
+      dir = "/" .. dir
+    end
+    M.remove_project(dir)
+    return
+  end
+
+  if action == "toggle" then
+    local dir = vim.fn.input(messages.TOGGLE_PROJECT)
+    if dir:sub(1, 1) ~= "/" then
+      dir = "/" .. dir
+    end
+    M.toggle_project(dir)
     return
   end
 end

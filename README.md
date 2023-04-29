@@ -33,7 +33,7 @@ vim.keymap.set("n", "<leader>m", function()
 	require("telescope").extensions.monorepo.monorepo()
 end)
 vim.keymap.set("n", "<leader>n", function()
-	require("monorepo").toggle_current_project()
+	require("monorepo").toggle_project()
 end)
 ```
 
@@ -41,17 +41,17 @@ end)
 
 You can add the current file's directory to the project list (works in netrw and files)
 ```lua
-:lua require("monorepo").add_current_project()
+:lua require("monorepo").add_project()
 ```
 
 You can also remove it if you don't want it in the project list
 ```lua
-:lua require("monorepo").remove_current_project()
+:lua require("monorepo").remove_project()
 ```
 
 You can also toggle these with a single command
 ```lua
-:lua require("monorepo").toggle_current_project()
+:lua require("monorepo").toggle_project()
 ```
 
 You can view the project list like this
@@ -63,18 +63,19 @@ or this
 :lua require("telescope").extensions.monorepo.monorepo()
 ```
 
+You can also use a prompt to manage your projects
+```lua
+-- You can use "add", "remove" or "toggle" here.
+-- If you don't specify any, it defaults to add
+:lua require("monorepo").prompt_project("add")
+```
 
-## Does this save? Where does this save?
+## FAQ
+### Does this persist between sessions? Where does this save?
+I use `vim.fn.stdpath("data")` to find the data path and then write a file called `monorepo.json`.
+This defaults to `$HOME/.local/share/nvim/` but can be changed in the config with `{ data_path = '/path/to/directory' }`
 
-## Todo
-
-1. Implement config options
-2. ci/cd
-3. A text box to type in a subdir
-4. Add gif to README
-5. Add LICENSE
-
-Extras features I wanna add:
+## Extras features I wanna add in the future
 - project.nvim support
 - Lualine support??
 - NerdTree support? what are popular trees/fs plugins?
