@@ -1,5 +1,6 @@
 # monorepo.nvim
 ![monorepo.nvim demo video. Shows opening a new monorepo and changing scopes using the plugin](demo.gif)
+
 monorepo.nvim is a plugin to manage monorepos inside of neovim! 
 Its goal is to make juggling multiple projects inside of a monorepo a little easier.
 
