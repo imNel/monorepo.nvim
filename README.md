@@ -34,7 +34,7 @@ Install the plugin (This example uses [lazy.nvim](https://github.com/folke/lazy.
 }
 ```
 
-The telescope extension beeds to be done at any point AFTER `require("telescope").setup()` and `require("monorepo").setup()`.
+The telescope extension needs to be loaded at any point AFTER `require("telescope").setup()` and `require("monorepo").setup()`.
 By default, this is done automatically but you can undo this by setting `{ autoload_telescope = false }` in the config.
 
 This is the snippet you'll need to run to load the extension if doing it manually
