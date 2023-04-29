@@ -1,8 +1,9 @@
 # monorepo.nvim
 ![monorepo.nvim demo video. Shows opening a new monorepo and changing scopes using the plugin](demo.gif)
 
-monorepo.nvim is a plugin to manage monorepos inside of neovim! 
-Its goal is to make juggling multiple projects inside of a monorepo a little easier.
+***monorepo.nvim*** is a plugin to manage the scope of monorepos inside of neovim! 
+
+Its goal is to make juggling multiple projects inside of a monorepo a little easier, in combination with Telescope's `find_files`.
 
 ## Requirements
 - [nvim-telescope/telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) for the project picker
@@ -10,33 +11,44 @@ Its goal is to make juggling multiple projects inside of a monorepo a little eas
 
 ## Installing
 
-1. Install the plugin (This example uses [lazy.nvim](https://github.com/folke/lazy.nvim))
+Install the plugin (This example uses [lazy.nvim](https://github.com/folke/lazy.nvim))
 ```lua
 {
-    "imNel/monorepo.nvim",
-    config = function()
-        require("monorepo").setup({
-            -- Your config here!
-        })
-    end,
-    dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"},
-    dev = true,
+  "imNel/monorepo.nvim",
+  config = function()
+    require("monorepo").setup({
+      -- Your config here!
+    })
+  end,
+  dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"},
+  dev = true,
 },
 ```
 
-2. Load the telescope extension (Needs to be done at any point AFTER `require("telescope").setup()` and `require("monorepo").setup()`).
-You can set this step to be done automatically by setting `{ autoload = true }` in the config.
+### Config Defaults
+```lua
+{
+  silent = false, -- Supresses vim.notify messages
+  autoload_telescope = true, -- Automatically loads the telescope extension at setup
+  data_path = vim.fn.stdpath("data"), -- Path that monorepo.json gets saved to
+}
+```
+
+The telescope extension beeds to be done at any point AFTER `require("telescope").setup()` and `require("monorepo").setup()`.
+By default, this is done automatically but you can undo this by setting `{ autoload_telescope = false }` in the config.
+
+This is the snippet you'll need to run to load the extension if doing it manually
 ```lua
 require("telescope").load_extension("monorepo")
 ```
 
-3. Set up your keybinds! 
+Set up your keybinds! 
 ```lua
 vim.keymap.set("n", "<leader>m", function()
-	require("telescope").extensions.monorepo.monorepo()
+  require("telescope").extensions.monorepo.monorepo()
 end)
 vim.keymap.set("n", "<leader>n", function()
-	require("monorepo").toggle_project()
+  require("monorepo").toggle_project()
 end)
 ```
 
