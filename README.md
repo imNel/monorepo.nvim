@@ -1,13 +1,15 @@
 # monorepo.nvim
+![monorepo.nvim demo video. Shows opening a new monorepo and changing scopes using the plugin](demo.gif)
 monorepo.nvim is a plugin to manage monorepos inside of neovim! 
 Its goal is to make juggling multiple projects inside of a monorepo a little easier.
 
 ## Requirements
-- You'll need [nvim-telescope/telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) for the project picker!
+- [nvim-telescope/telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) for the project picker
+- [nvim-lua/plenary.nvim](https://github.com/nvim-lua/plenary.nvim) for some helper functions used internally
 
 ## Installing
 
-1. Install the plugin (This example uses [lazy.nvim](https://github.com/folke/lazy.nvim)
+1. Install the plugin (This example uses [lazy.nvim](https://github.com/folke/lazy.nvim))
 ```lua
 {
     "imNel/monorepo.nvim",
@@ -16,7 +18,7 @@ Its goal is to make juggling multiple projects inside of a monorepo a little eas
             -- Your config here!
         })
     end,
-    dependencies = { "nvim-telescope/telescope.nvim" },
+    dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"},
     dev = true,
 },
 ```
