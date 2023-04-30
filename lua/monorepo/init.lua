@@ -156,4 +156,51 @@ M.prompt_project = function(action)
   end
 end
 
+M.go_to_project = function(index)
+  local project = M.monorepoVars[M.currentMonorepo][index]
+  if not project then
+    return
+  end
+  vim.cmd("cd " .. M.currentMonorepo .. "/" .. project)
+  utils.notify(messages.SWITCHED_PROJECT .. ": " .. project)
+end
+
+M.next_project = function()
+  local projects = M.monorepoVars[M.currentMonorepo]
+  local current_project = "/"
+  if vim.fn.getcwd() ~= M.currentMonorepo then
+    current_project = vim.fn.getcwd():sub(#M.currentMonorepo + 1)
+  end
+
+  local index = utils.index_of(projects, current_project)
+  if not index then
+    return
+  end
+  if index == #projects then
+    index = 1
+  else
+    index = index + 1
+  end
+  M.go_to_project(index)
+end
+
+M.previous_project = function()
+  local projects = M.monorepoVars[M.currentMonorepo]
+  local current_project = "/"
+  if vim.fn.getcwd() ~= M.currentMonorepo then
+    current_project = vim.fn.getcwd():sub(#M.currentMonorepo + 1)
+  end
+
+  local index = utils.index_of(projects, current_project)
+  if not index then
+    return
+  end
+  if index == 1 then
+    index = #projects
+  else
+    index = index - 1
+  end
+  M.go_to_project(index)
+end
+
 return M

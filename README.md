@@ -54,6 +54,8 @@ end)
 
 ## Usage (These can be mapped to keybinds)
 
+### Managing Projects
+
 You can add the current file's directory to the project list (works in netrw and files)
 ```lua
 :lua require("monorepo").add_project()
@@ -74,6 +76,28 @@ You can also use a prompt to manage your projects
 -- You can use "add", "remove" or "toggle" here.
 -- If you don't specify any, it defaults to add
 :lua require("monorepo").prompt_project("add")
+```
+
+### Changing Projects
+
+You can jump to a specific sub-project using its index (they're ordered in the order you added them)
+```lua
+:lua require("monorepo").go_to_project(index)
+```
+
+*I use a for loop here to quickly jump to different indexes*
+```lua
+for i = 1, 9 do
+	set("n", "<leader>" .. i, function()
+		require("monorepo").go_to_project(i)
+	end)
+end
+```
+
+There are also functions to jump to the next or previous project
+```lua
+:lua require("monorepo").next_project()
+:lua require("monorepo").previous_project()
 ```
 
 ### Telescope
