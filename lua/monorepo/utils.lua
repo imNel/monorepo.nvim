@@ -66,4 +66,13 @@ M.notify = function(message)
   vim.notify(message)
 end
 
+M.index_of = function(array, value)
+  for i, v in ipairs(array) do
+    if v == value then
+      return i
+    end
+  end
+  return nil
+end
+
 return M

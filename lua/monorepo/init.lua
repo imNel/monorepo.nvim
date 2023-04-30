@@ -80,7 +80,7 @@ M.remove_project = function(dir)
     utils.notify(messages.CANT_REMOVE_PROJECT)
     return
   end
-  projects = table.remove(projects, vim.tbl_get(projects, dir))
+  projects = table.remove(projects, utils.index_of(projects, dir))
   utils.notify(messages.REMOVED_PROJECT .. ": " .. dir)
   utils.save()
 end
@@ -103,7 +103,7 @@ M.toggle_project = function(dir)
   end
 
   if vim.tbl_contains(projects, dir) then
-    projects = table.remove(projects, vim.tbl_get(projects, dir))
+    projects = table.remove(projects, utils.index_of(projects, dir))
     utils.notify(messages.REMOVED_PROJECT .. ": " .. dir)
     utils.save()
     return
