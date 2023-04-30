@@ -95,7 +95,7 @@ dd -> delete_entry
 <ctrl-d> -> delete_entry
 <ctrl-a> -> add_entry
 ```
-*These are very basic for now and can't be changed in the config, feel free to create a ticket suggest ideas*
+*These are very basic for now and can't be changed in the config, feel free to create an issue to suggest ideas.*
 
 ## FAQ
 ### Does this persist between sessions? Where does this save?
