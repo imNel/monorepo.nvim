@@ -32,7 +32,17 @@ local function delete_entry(prompt_bufnr)
     return
   end
   require("monorepo").remove_project(selected_entry.value)
-  action_state.get_picker(prompt_bufnr):refresh(
+  action_state.get_current_picker(prompt_bufnr):refresh(
+    finders.new_table({
+      results = currentProjects,
+    }),
+    { reset_prompt = true }
+  )
+end
+
+local function add_entry(prompt_bufnr)
+  require("monorepo").prompt_project()
+  action_state.get_current_picker(prompt_bufnr):refresh(
     finders.new_table({
       results = currentProjects,
     }),
@@ -50,7 +60,9 @@ local monorepo = function(opts)
       }),
       sorter = conf.file_sorter(opts),
       attach_mappings = function(prompt_bufnr, map)
-        map("n", "d", delete_entry)
+        map("n", "dd", delete_entry)
+        map("i", "<c-d>", delete_entry)
+        map("i", "<c-a>", add_entry)
         actions.select_default:replace(select_project)
         return true
       end,

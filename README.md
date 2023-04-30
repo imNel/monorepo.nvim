@@ -69,6 +69,14 @@ You can also toggle these with a single command
 :lua require("monorepo").toggle_project()
 ```
 
+You can also use a prompt to manage your projects
+```lua
+-- You can use "add", "remove" or "toggle" here.
+-- If you don't specify any, it defaults to add
+:lua require("monorepo").prompt_project("add")
+```
+
+### Telescope
 You can view the project list like this
 ```lua
 :Telescope monorepo
@@ -78,12 +86,16 @@ or this
 :lua require("telescope").extensions.monorepo.monorepo()
 ```
 
-You can also use a prompt to manage your projects
+You can also manage your projects using keybinds inside of telescope.
 ```lua
--- You can use "add", "remove" or "toggle" here.
--- If you don't specify any, it defaults to add
-:lua require("monorepo").prompt_project("add")
+-- Normal Mode
+dd -> delete_entry
+
+-- Insert Mode
+<ctrl-d> -> delete_entry
+<ctrl-a> -> add_entry
 ```
+*These are very basic for now and can't be changed in the config, feel free to create a ticket suggest ideas*
 
 ## FAQ
 ### Does this persist between sessions? Where does this save?
