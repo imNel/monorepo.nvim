@@ -21,7 +21,6 @@ Install the plugin (This example uses [lazy.nvim](https://github.com/folke/lazy.
     })
   end,
   dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"},
-  dev = true,
 },
 ```
 
