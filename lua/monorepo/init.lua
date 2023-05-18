@@ -161,7 +161,7 @@ M.go_to_project = function(index)
   if not project then
     return
   end
-  vim.cmd("cd " .. M.currentMonorepo .. "/" .. project)
+  vim.api.nvim_set_current_dir(M.currentMonorepo .. "/" .. project)
   utils.notify(messages.SWITCHED_PROJECT .. ": " .. project)
 end
 

@@ -18,7 +18,7 @@ local utils = require("monorepo.utils")
 local function select_project(prompt_bufnr)
   actions.close(prompt_bufnr)
   local selection = action_state.get_selected_entry()
-  vim.cmd("cd " .. currentMonorepo .. "/" .. selection.value)
+  vim.api.nvim_set_current_dir(currentMonorepo .. "/" .. selection.value)
   utils.notify(messages.SWITCHED_PROJECT .. ": " .. selection.value)
 end
 
