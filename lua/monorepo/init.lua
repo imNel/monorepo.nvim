@@ -130,27 +130,21 @@ M.prompt_project = function(action)
 
   if action == "add" then
     local dir = vim.fn.input(messages.ADD_PROJECT)
-    if dir:sub(1, 1) ~= "/" then
-      dir = "/" .. dir
-    end
+    dir = utils.format_path(dir)
     M.add_project(dir)
     return
   end
 
   if action == "remove" then
     local dir = vim.fn.input(messages.REMOVE_PROJECT)
-    if dir:sub(1, 1) ~= "/" then
-      dir = "/" .. dir
-    end
+    dir = utils.format_path(dir)
     M.remove_project(dir)
     return
   end
 
   if action == "toggle" then
     local dir = vim.fn.input(messages.TOGGLE_PROJECT)
-    if dir:sub(1, 1) ~= "/" then
-      dir = "/" .. dir
-    end
+    dir = utils.format_path(dir)
     M.toggle_project(dir)
     return
   end

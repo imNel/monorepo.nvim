@@ -2,7 +2,7 @@ local Path = require("plenary.path")
 
 local M = {}
 
--- Get the relative directory of path param, 
+-- Get the relative directory of path param,
 ---@param file string
 ---@param netrw boolean
 ---@return string|nil
@@ -73,6 +73,18 @@ M.index_of = function(array, value)
     end
   end
   return nil
+end
+
+M.format_path = function(path)
+  -- Remove leading ./ and add leading /
+  if path:sub(1, 2) == "./" then
+    path = path:sub(2)
+  end
+  -- Add leading /
+  if path:sub(1, 1) ~= "/" then
+    path = "/" .. path
+  end
+  return path
 end
 
 return M
