@@ -147,7 +147,7 @@ Using this, you can switch monorepos without having to close nvim and cd to a di
 :lua require("monorepo").change_monorepo(path)
 ```
 
-This pairs well with something like (telescope-project.nvim)[https://github.com/nvim-telescope/telescope-project.nvim], which offers a hook when changing projects.
+This pairs well with something like [telescope-project.nvim](https://github.com/nvim-telescope/telescope-project.nvim), which offers a hook when changing projects.
 See an example from my own config below:
 
 ```lua
