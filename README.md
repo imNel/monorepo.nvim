@@ -99,9 +99,9 @@ _I use a for loop here to quickly jump to different indexes_
 
 ```lua
 for i = 1, 9 do
-	set("n", "<leader>" .. i, function()
-		require("monorepo").go_to_project(i)
-	end)
+  set("n", "<leader>" .. i, function()
+    require("monorepo").go_to_project(i)
+  end)
 end
 ```
 
@@ -152,20 +152,20 @@ See an example from my own config below:
 
 ```lua
 require("telescope").setup({
-	extensions = {
-		project = {
-			on_project_selected = function(prompt_bufnr)
-				-- Change dir to the selected project
-				project_actions.change_working_directory(prompt_bufnr, false)
+  extensions = {
+    project = {
+      on_project_selected = function(prompt_bufnr)
+        -- Change dir to the selected project
+         project_actions.change_working_directory(prompt_bufnr, false)
 
-				-- Change monorepo directory to the selected project
-				local selected_entry = action_state.get_selected_entry(prompt_bufnr)
-				require("monorepo").change_monorepo(selected_entry.value)
+         -- Change monorepo directory to the selected project
+         local selected_entry = action_state.get_selected_entry(prompt_bufnr)
+         require("monorepo").change_monorepo(selected_entry.value)
 
-				require("telescope.builtin").find_files()
-			end,
-		}
-	}
+         require("telescope.builtin").find_files()
+      end,
+    }
+  }
 }
 ```
 
