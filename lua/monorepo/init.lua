@@ -26,7 +26,7 @@ M.setup = function(config)
   end
 
   vim.opt.autochdir = false
-  utils.load(M) -- Load monorepo.json into M
+  utils.load() -- Load monorepo.json
 
   -- I don't know if this is bad practice but I had weird issues where
   -- sometimes telescope would load before my setup function
@@ -195,6 +195,11 @@ M.previous_project = function()
     index = index - 1
   end
   M.go_to_project(index)
+end
+
+M.change_monorepo = function(path)
+  require("monorepo").currentMonorepo = path
+  utils.load()
 end
 
 return M

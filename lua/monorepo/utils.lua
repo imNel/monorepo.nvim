@@ -33,13 +33,10 @@ M.save = function()
 end
 
 -- Load json file from data_path/monorepo.json into init module.
---
--- Passing module here to avoid having to use global vars.
--- I'm tired tho so this could be stupid...
----@param module table
 ---@return boolean, table|nil
-M.load = function(module)
-  local data_path = require("monorepo").config.data_path
+M.load = function()
+  local module = require("monorepo")
+  local data_path = module.config.data_path
   local persistent_json = data_path .. "/monorepo.json"
   local status, load = pcall(function()
     return vim.json.decode(Path:new(persistent_json):read())
