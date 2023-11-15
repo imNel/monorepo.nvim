@@ -37,6 +37,12 @@ M.setup = function(config)
       telescope.load_extension("monorepo")
     end
   end
+
+  vim.api.nvim_create_autocmd("SessionLoadPost", {
+    callback = function()
+      M.change_monorepo(vim.fn.getcwd())
+    end,
+  })
 end
 
 -- If no dir is passed, it will use the current buffer's directory
